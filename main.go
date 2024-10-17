@@ -11,7 +11,7 @@ func main() {
 		ICMP: packet.ICMP{
 			Type: 8,
 			Code: 0,
-			Data: utils.GenerateData(30),
+			Data: utils.GeneratePingData(30),
 		},
 		Identifier: 1,
 		Sequence:   10,
