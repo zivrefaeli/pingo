@@ -7,19 +7,17 @@ import (
 )
 
 func main() {
-	var size uint16 = 100
-
-	pRequest := packet.EchoICMP{
+	request := packet.EchoICMP{
 		ICMP: packet.ICMP{
 			Type: 8,
 			Code: 0,
-			Data: utils.GenerateData(size),
+			Data: utils.GenerateData(30),
 		},
 		Identifier: 1,
-		Sequence:   54,
+		Sequence:   10,
 	}
 
-	pRequest.CalcChecksum()
-
-	fmt.Printf("0x%x\n", pRequest.Checksum)
+	fmt.Println(request)
+	fmt.Println(request.Parse())
+	fmt.Printf("Checksum = 0x%x\n", request.Checksum)
 }
