@@ -30,11 +30,10 @@ func (p *EchoICMP) Parse() []byte {
 }
 
 func (p *EchoICMP) CalcChecksum() {
-	var headersSum uint16 = utils.ConcatBytes(p.Type, p.Code) + p.Identifier + p.Sequence
-	var sumCarry uint16
-
 	dataSize := len(p.Data)
 	var dataHigher, dataLower byte
+	var sumCarry uint16
+	headersSum := utils.ConcatBytes(p.Type, p.Code) + p.Identifier + p.Sequence
 
 	for i := 0; i < dataSize; i += 2 {
 		dataHigher = p.Data[i]
