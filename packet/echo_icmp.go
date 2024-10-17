@@ -12,7 +12,21 @@ type EchoICMP struct {
 }
 
 func (p *EchoICMP) Parse() []byte {
-	return p.Data
+	p.CalcChecksum()
+
+	icmpHeader := make([]byte, 8)
+	icmpHeader[0] = p.Type
+	icmpHeader[1] = p.Code
+	icmpHeader[2] = byte(p.Checksum >> 8)
+	icmpHeader[3] = byte(p.Checksum)
+	icmpHeader[4] = byte(p.Identifier >> 8)
+	icmpHeader[5] = byte(p.Identifier)
+	icmpHeader[6] = byte(p.Sequence >> 8)
+	icmpHeader[7] = byte(p.Sequence)
+
+	icmpHeader = append(icmpHeader, p.Data...)
+
+	return icmpHeader
 }
 
 func (p *EchoICMP) CalcChecksum() {
