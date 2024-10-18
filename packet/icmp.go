@@ -6,7 +6,7 @@ type Packet interface {
 
 type ICMPPacket interface {
 	Packet
-	CalcChecksum()
+	CalcChecksum() uint16
 }
 
 type ICMP struct {

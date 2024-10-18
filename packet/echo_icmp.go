@@ -12,7 +12,7 @@ type EchoICMP struct {
 }
 
 func (p *EchoICMP) Parse() []byte {
-	p.CalcChecksum()
+	p.Checksum = p.CalcChecksum()
 
 	icmpHeader := make([]byte, 8)
 	icmpHeader[0] = p.Type
@@ -29,7 +29,7 @@ func (p *EchoICMP) Parse() []byte {
 	return icmpHeader
 }
 
-func (p *EchoICMP) CalcChecksum() {
+func (p *EchoICMP) CalcChecksum() uint16 {
 	dataSize := len(p.Data)
 	var dataHigher, dataLower byte
 	var sumCarry uint16
@@ -50,5 +50,5 @@ func (p *EchoICMP) CalcChecksum() {
 		headersSum += diff
 	}
 
-	p.Checksum = ^(headersSum + sumCarry)
+	return ^(headersSum + sumCarry)
 }

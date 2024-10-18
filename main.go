@@ -26,9 +26,6 @@ func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
 	ipHeader := buffer[:IP_HEADER_SIZE]
 	icmpHeader := buffer[IP_HEADER_SIZE:]
 
-	fmt.Println("ip =", ipHeader)
-	fmt.Println("icmp =", icmpHeader)
-
 	response := packet.EchoICMP{
 		ICMP: packet.ICMP{
 			Type:     icmpHeader[0],
@@ -40,7 +37,11 @@ func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
 		Sequence:   utils.ConcatBytes(icmpHeader[6], icmpHeader[7]),
 	}
 
-	fmt.Println(response)
+	if response.Checksum == response.CalcChecksum() {
+		fmt.Printf("Reply from %s: bytes=%d time=? TTL=%d\n", (*conn).RemoteAddr().String(), len(response.Data), ipHeader[8])
+	} else {
+		fmt.Printf("Invalid checksum response 0x%x\n", response.Checksum)
+	}
 }
 
 func main() {
