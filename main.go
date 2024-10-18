@@ -5,11 +5,13 @@ import (
 	"net"
 	"pingo/packet"
 	"pingo/utils"
+	"time"
 )
 
 const IP_HEADER_SIZE = 20
 
 func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
+	startTime := time.Now()
 	sentBytes, err := (*conn).Write(request.Parse())
 	if err != nil {
 		fmt.Println(err)
@@ -22,7 +24,7 @@ func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
 		fmt.Println(err)
 		return
 	}
-
+	timeDiff := time.Since(startTime)
 	ipHeader := buffer[:IP_HEADER_SIZE]
 	icmpHeader := buffer[IP_HEADER_SIZE:]
 
@@ -36,9 +38,8 @@ func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
 		Identifier: utils.ConcatBytes(icmpHeader[4], icmpHeader[5]),
 		Sequence:   utils.ConcatBytes(icmpHeader[6], icmpHeader[7]),
 	}
-
 	if response.Checksum == response.CalcChecksum() {
-		fmt.Printf("Reply from %s: bytes=%d time=? TTL=%d\n", (*conn).RemoteAddr().String(), len(response.Data), ipHeader[8])
+		fmt.Printf("Reply from %s: bytes=%d time=%dms TTL=%d\n", (*conn).RemoteAddr().String(), len(response.Data), timeDiff.Milliseconds(), ipHeader[8])
 	} else {
 		fmt.Printf("Invalid checksum response 0x%x\n", response.Checksum)
 	}
