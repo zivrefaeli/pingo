@@ -7,23 +7,40 @@ import (
 	"pingo/utils"
 )
 
+const IP_HEADER_SIZE = 20
+
 func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
 	sentBytes, err := (*conn).Write(request.Parse())
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	buffer := make([]byte, IP_HEADER_SIZE+sentBytes)
 
-	buffer := make([]byte, 100)
-
-	readBytes, err := (*conn).Read(buffer)
+	_, err = (*conn).Read(buffer)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println(sentBytes, readBytes)
-	fmt.Println(buffer)
+	ipHeader := buffer[:IP_HEADER_SIZE]
+	icmpHeader := buffer[IP_HEADER_SIZE:]
+
+	fmt.Println("ip =", ipHeader)
+	fmt.Println("icmp =", icmpHeader)
+
+	response := packet.EchoICMP{
+		ICMP: packet.ICMP{
+			Type:     icmpHeader[0],
+			Code:     icmpHeader[1],
+			Checksum: utils.ConcatBytes(icmpHeader[2], icmpHeader[3]),
+			Data:     icmpHeader[8:],
+		},
+		Identifier: utils.ConcatBytes(icmpHeader[4], icmpHeader[5]),
+		Sequence:   utils.ConcatBytes(icmpHeader[6], icmpHeader[7]),
+	}
+
+	fmt.Println(response)
 }
 
 func main() {
