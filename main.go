@@ -48,6 +48,7 @@ func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
 func main() {
 	address := "127.0.0.1"
 	var size uint16 = 32
+	count := 4
 
 	request := packet.EchoICMP{
 		ICMP: packet.ICMP{
@@ -67,5 +68,12 @@ func main() {
 	defer conn.Close()
 	fmt.Printf("\nPinging %s with %d bytes of data:\n", address, size)
 
-	SendPacket(&conn, &request)
+	for i := 0; i < count; i++ {
+		SendPacket(&conn, &request)
+
+		if i < count-1 {
+			time.Sleep(time.Second)
+			request.Sequence++
+		}
+	}
 }
