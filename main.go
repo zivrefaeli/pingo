@@ -7,6 +7,25 @@ import (
 	"pingo/utils"
 )
 
+func SendPacket(conn *net.Conn, request *packet.EchoICMP) {
+	sentBytes, err := (*conn).Write(request.Parse())
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	buffer := make([]byte, 100)
+
+	readBytes, err := (*conn).Read(buffer)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(sentBytes, readBytes)
+	fmt.Println(buffer)
+}
+
 func main() {
 	address := "127.0.0.1"
 	var size uint16 = 32
@@ -27,4 +46,7 @@ func main() {
 		return
 	}
 	defer conn.Close()
+	fmt.Printf("\nPinging %s with %d bytes of data:\n", address, size)
+
+	SendPacket(&conn, &request)
 }
