@@ -5,8 +5,6 @@ import (
 	"pingo/utils"
 )
 
-const IP_HEADER_SIZE = 20
-
 type Packet interface {
 	Parse() []byte
 }
@@ -23,19 +21,20 @@ type ICMP struct {
 	Data     []byte
 }
 
-func SendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, error) {
+func SendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, TTL, error) {
 	sentBytes, err := (*conn).Write(icmp.Parse())
 	if err != nil {
-		return ICMP{}, err
+		return ICMP{}, 0, err
 	}
 
 	buffer := make([]byte, IP_HEADER_SIZE+sentBytes)
 
 	_, err = (*conn).Read(buffer)
 	if err != nil {
-		return ICMP{}, err
+		return ICMP{}, 0, err
 	}
 
+	ipHeader := buffer[:IP_HEADER_SIZE]
 	icmpHeader := buffer[IP_HEADER_SIZE:]
 
 	return ICMP{
@@ -43,5 +42,5 @@ func SendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, error) {
 		Code:     icmpHeader[1],
 		Checksum: utils.ConcatBytes(icmpHeader[2], icmpHeader[3]),
 		Data:     icmpHeader[4:],
-	}, nil
+	}, TTL(ipHeader[8]), nil
 }
