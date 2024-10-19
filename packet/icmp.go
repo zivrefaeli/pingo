@@ -21,7 +21,7 @@ type ICMP struct {
 	Data     []byte
 }
 
-func SendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, TTL, error) {
+func sendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, TTL, error) {
 	sentBytes, err := (*conn).Write(icmp.Parse())
 	if err != nil {
 		return ICMP{}, 0, err

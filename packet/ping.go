@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-func SendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
+func sendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
 	startTime := time.Now()
-	icmp, ttl, err := SendICMPPacket(conn, echoRequest)
+	icmp, ttl, err := sendICMPPacket(conn, echoRequest)
 	timeDiff := time.Since(startTime)
 	if err != nil {
 		return -1, err
@@ -67,7 +67,7 @@ func StartPinging(targetName string, echoRequestsCount int, bufferSize uint16) e
 	var minMs, maxMs, sumMs int64 = math.MaxInt64, math.MinInt64, 0
 
 	for i := 0; i < echoRequestsCount; i++ {
-		ms, err := SendPingRequest(&conn, &echoRequest)
+		ms, err := sendPingRequest(&conn, &echoRequest)
 		if err != nil {
 			fmt.Println(err)
 			lostPackets++
