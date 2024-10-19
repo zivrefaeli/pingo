@@ -10,7 +10,7 @@ You can run pingo using:
 go run main.go
 ```
 
-Or you can build it and then execute:
+Or you can build and execute it:
 
 ```bash
 go build
