@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"net"
 	"pingo/packet"
 	"pingo/utils"
@@ -73,15 +74,32 @@ func main() {
 	defer conn.Close()
 	fmt.Printf("\nPinging %s with %d bytes of data:\n", address, size)
 
+	lostPackets := 0
+	var msMin, msMax, msSum int64 = math.MaxInt64, math.MinInt64, 0
+
 	for i := 0; i < totalPackets; i++ {
-		_, err := SendPacket(&conn, &request)
+		ms, err := SendPacket(&conn, &request)
 		if err != nil {
 			fmt.Println(err)
+			lostPackets++
 		}
+
+		if ms > msMax {
+			msMax = ms
+		} else if ms < msMin {
+			msMin = ms
+		}
+		msSum += ms
 
 		if i < totalPackets-1 {
 			time.Sleep(time.Second)
 			request.Sequence++
 		}
 	}
+
+	lossPercentage := int(float64(lostPackets) / float64(totalPackets) * 100)
+	fmt.Printf("\nPing statistics for %s:\n", conn.RemoteAddr().String())
+	fmt.Printf("    Packets: Sent = %d, Received = %d, Lost = %d (%d%% loss),\n", totalPackets, totalPackets-lostPackets, lostPackets, lossPercentage)
+	fmt.Println("Approximate round trip times in milli-seconds:")
+	fmt.Printf("    Minimum = %dms, Maximum = %dms, Average = %dms\n", msMin, msMax, msSum/int64(totalPackets))
 }
