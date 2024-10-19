@@ -75,7 +75,8 @@ func StartPinging(targetName string, echoRequestsCount int, bufferSize uint16) e
 
 		if ms > maxMs {
 			maxMs = ms
-		} else if ms < minMs {
+		}
+		if ms < minMs {
 			minMs = ms
 		}
 		sumMs += ms
