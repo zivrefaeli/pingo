@@ -4,13 +4,13 @@ ping networking utility implemented in Go
 
 ## Use locally
 
-You can run the project using:
+You can run pingo using:
 
 ```bash
 go run main.go
 ```
 
-Or you can build `pingo` and executing it:
+Or you can build and execute it:
 
 ```bash
 go build
