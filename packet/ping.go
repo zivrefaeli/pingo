@@ -11,7 +11,7 @@ import (
 
 func sendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
 	startTime := time.Now()
-	icmp, ip, err := sendICMPPacket(conn, echoRequest)
+	ip, icmp, err := sendICMPPacket(conn, echoRequest)
 	timeDiff := time.Since(startTime)
 	if err != nil {
 		return -1, err
