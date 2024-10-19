@@ -12,11 +12,13 @@ func main() {
 	var bufferSize uint16
 
 	rootCmd := &cobra.Command{
-		Use: "pingo",
+		Use:  "pingo [TARGET_NAME]",
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			targetName := args[0]
 			return packet.StartPinging(targetName, echoRequestsCount, bufferSize)
 		},
+		SilenceUsage: true,
 	}
 
 	rootCmd.Flags().IntVarP(&echoRequestsCount, "count", "n", 4, "Number of echo requests to send.")
