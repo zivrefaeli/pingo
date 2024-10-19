@@ -5,6 +5,8 @@ import (
 	"pingo/utils"
 )
 
+const ECHO_REQUEST_TYPE = 8
+
 type EchoICMP struct {
 	ICMP
 	Identifier uint16

@@ -3,6 +3,7 @@ package packet
 import (
 	"fmt"
 	"math"
+	"math/rand/v2"
 	"net"
 	"pingo/utils"
 	"time"
@@ -41,12 +42,12 @@ func SendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
 func StartPinging(targetName string, echoRequestsCount int, bufferSize uint16) error {
 	echoRequest := EchoICMP{
 		ICMP: ICMP{
-			Type: 8,
+			Type: ECHO_REQUEST_TYPE,
 			Code: 0,
 			Data: utils.GeneratePingData(bufferSize),
 		},
-		Identifier: 1,
-		Sequence:   10,
+		Identifier: uint16(rand.IntN(10)),
+		Sequence:   uint16(rand.IntN(1000)),
 	}
 
 	conn, err := net.Dial("ip:icmp", targetName)
