@@ -21,17 +21,17 @@ type ICMP struct {
 	Data     []byte
 }
 
-func sendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, TTL, error) {
+func sendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, IP, error) {
 	sentBytes, err := (*conn).Write(icmp.Parse())
 	if err != nil {
-		return ICMP{}, 0, err
+		return ICMP{}, IP{}, err
 	}
 
 	buffer := make([]byte, IP_HEADER_SIZE+sentBytes)
 
 	_, err = (*conn).Read(buffer)
 	if err != nil {
-		return ICMP{}, 0, err
+		return ICMP{}, IP{}, err
 	}
 
 	ipHeader := buffer[:IP_HEADER_SIZE]
@@ -42,5 +42,5 @@ func sendICMPPacket(conn *net.Conn, icmp ICMPPacket) (ICMP, TTL, error) {
 		Code:     icmpHeader[1],
 		Checksum: utils.ConcatBytes(icmpHeader[2], icmpHeader[3]),
 		Data:     icmpHeader[4:],
-	}, TTL(ipHeader[8]), nil
+	}, IP{TTL: ipHeader[8]}, nil
 }

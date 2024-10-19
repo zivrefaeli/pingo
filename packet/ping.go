@@ -11,7 +11,7 @@ import (
 
 func sendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
 	startTime := time.Now()
-	icmp, ttl, err := sendICMPPacket(conn, echoRequest)
+	icmp, ip, err := sendICMPPacket(conn, echoRequest)
 	timeDiff := time.Since(startTime)
 	if err != nil {
 		return -1, err
@@ -32,9 +32,9 @@ func sendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
 
 	ms := timeDiff.Milliseconds()
 	if ms == 0 {
-		fmt.Printf("Reply from %s: bytes=%d time<1ms TTL=%d\n", (*conn).RemoteAddr().String(), len(echoReply.Data), ttl)
+		fmt.Printf("Reply from %s: bytes=%d time<1ms TTL=%d\n", (*conn).RemoteAddr().String(), len(echoReply.Data), ip.TTL)
 	} else {
-		fmt.Printf("Reply from %s: bytes=%d time=%dms TTL=%d\n", (*conn).RemoteAddr().String(), len(echoReply.Data), ms, ttl)
+		fmt.Printf("Reply from %s: bytes=%d time=%dms TTL=%d\n", (*conn).RemoteAddr().String(), len(echoReply.Data), ms, ip.TTL)
 	}
 	return ms, nil
 }
