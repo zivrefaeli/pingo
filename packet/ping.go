@@ -55,7 +55,13 @@ func StartPinging(targetName string, echoRequestsCount int, bufferSize uint16) e
 		return err
 	}
 	defer conn.Close()
-	fmt.Printf("\nPinging %s with %d bytes of data:\n", targetName, bufferSize)
+
+	targetIp := conn.RemoteAddr().String()
+	if targetName != targetIp {
+		fmt.Printf("\nPinging %s [%s] with %d bytes of data:\n", targetName, targetIp, bufferSize)
+	} else {
+		fmt.Printf("\nPinging %s with %d bytes of data:\n", targetName, bufferSize)
+	}
 
 	lostPackets := 0
 	var minMs, maxMs, sumMs int64 = math.MaxInt64, math.MinInt64, 0
@@ -83,7 +89,7 @@ func StartPinging(targetName string, echoRequestsCount int, bufferSize uint16) e
 	lossPercentage := int(float64(lostPackets) / float64(echoRequestsCount) * 100)
 	msAvg := sumMs / int64(echoRequestsCount)
 
-	fmt.Printf("\nPing statistics for %s:\n", conn.RemoteAddr().String())
+	fmt.Printf("\nPing statistics for %s:\n", targetIp)
 	fmt.Printf("    Packets: Sent = %d, Received = %d, Lost = %d (%d%% loss),\n", echoRequestsCount, echoRequestsCount-lostPackets, lostPackets, lossPercentage)
 	fmt.Println("Approximate round trip times in milli-seconds:")
 	fmt.Printf("    Minimum = %dms, Maximum = %dms, Average = %dms\n", minMs, maxMs, msAvg)
