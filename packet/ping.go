@@ -2,6 +2,7 @@ package packet
 
 import (
 	"fmt"
+	"math"
 	"net"
 	"pingo/utils"
 	"time"
@@ -55,16 +56,36 @@ func StartPinging(targetName string, echoRequestsCount int, bufferSize uint16) e
 	defer conn.Close()
 	fmt.Printf("\nPinging %s with %d bytes of data:\n", targetName, bufferSize)
 
+	lostPackets := 0
+	var minMs, maxMs, sumMs int64 = math.MaxInt64, math.MinInt64, 0
+
 	for i := 0; i < echoRequestsCount; i++ {
-		_, err = SendPingRequest(&conn, &echoRequest)
+		ms, err := SendPingRequest(&conn, &echoRequest)
 		if err != nil {
 			fmt.Println(err)
+			lostPackets++
 		}
+
+		if ms > maxMs {
+			maxMs = ms
+		} else if ms < minMs {
+			minMs = ms
+		}
+		sumMs += ms
 
 		if i < echoRequestsCount-1 {
 			time.Sleep(time.Second)
 			echoRequest.Sequence++
 		}
 	}
+
+	lossPercentage := int(float64(lostPackets) / float64(echoRequestsCount) * 100)
+	msAvg := sumMs / int64(echoRequestsCount)
+
+	fmt.Printf("\nPing statistics for %s:\n", conn.RemoteAddr().String())
+	fmt.Printf("    Packets: Sent = %d, Received = %d, Lost = %d (%d%% loss),\n", echoRequestsCount, echoRequestsCount-lostPackets, lostPackets, lossPercentage)
+	fmt.Println("Approximate round trip times in milli-seconds:")
+	fmt.Printf("    Minimum = %dms, Maximum = %dms, Average = %dms\n", minMs, maxMs, msAvg)
+
 	return nil
 }
