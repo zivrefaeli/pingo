@@ -2,7 +2,8 @@ package packet
 
 import (
 	"math"
-	"pingo/utils"
+
+	"github.com/zivrefaeli/pingo/utils"
 )
 
 const ECHO_REQUEST_TYPE = 8

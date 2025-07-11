@@ -1,4 +1,4 @@
-module pingo
+module github.com/zivrefaeli/pingo
 
 go 1.23.2
 
