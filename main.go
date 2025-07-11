@@ -2,9 +2,9 @@ package main
 
 import (
 	"os"
-	"pingo/packet"
 
 	"github.com/spf13/cobra"
+	"github.com/zivrefaeli/pingo/packet"
 )
 
 func main() {

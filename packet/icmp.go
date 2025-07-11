@@ -2,7 +2,8 @@ package packet
 
 import (
 	"net"
-	"pingo/utils"
+
+	"github.com/zivrefaeli/pingo/utils"
 )
 
 type Packet interface {

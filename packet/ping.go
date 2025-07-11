@@ -5,8 +5,9 @@ import (
 	"math"
 	"math/rand/v2"
 	"net"
-	"pingo/utils"
 	"time"
+
+	"github.com/zivrefaeli/pingo/utils"
 )
 
 func sendPingRequest(conn *net.Conn, echoRequest *EchoICMP) (int64, error) {
